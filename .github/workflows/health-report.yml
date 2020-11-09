@@ -1,0 +1,27 @@
+name: USTC-Health-Report
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4,16 * * *"
+  watch:
+    types: [started]
+  push:
+
+jobs:
+  health-report:
+    name: Report Health Condition
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8" # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          architecture: "x64" # optional x64 or x86. Defaults to x64 if not specified
+      - run: |
+          python3 -m pip install -r requirements.txt
+      - run: |
+          python3 main.py
+        env:
+          IDENT: ${{ secrets.IDENT }}
