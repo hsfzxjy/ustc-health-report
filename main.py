@@ -30,6 +30,8 @@ def _extract_form_values(root):
         ("now_province", "hidden", "340000"),
         ("gps_city", "input", ""),
         ("now_city", "hidden", "340100"),
+        ("gps_country", "input", ""),
+        ("now_country", "hidden", ""),
         ("now_detail", "textarea", ""),
         ("is_inschool", "input", "7"),
         ("body_condition", "select", "1"),
@@ -40,6 +42,7 @@ def _extract_form_values(root):
         ("last_touch_sars", "checked-input", "0"),
         ("last_touch_sars_date", "input", ""),
         ("last_touch_sars_detail", "textarea", ""),
+        ("is_danger", "input", "0"),
         ("other_detail", "textarea", ""),
     ]:
         payload[name] = _get_value(form, name, pattern) or default
@@ -65,6 +68,7 @@ def login(session: requests.Session, username: str, password: str):
 def report_health(response: requests.Response):
     root = document_fromstring(response.text)
     payload = _extract_form_values(root)
+    print(payload)
     return session.post("https://weixine.ustc.edu.cn/2020/daliy_report", data=payload)
 
 
@@ -72,8 +76,8 @@ if __name__ == "__main__":
     IDENT = os.getenv("IDENT")
     session = requests.Session()
     r = login(session, *IDENT.split(":"))
+    print("logined")
     r = report_health(r)
-
+    print(r.status_code)
     if r.status_code != 200 or "上报成功" not in r.text:
-        print(r.text)
         sys.exit(1)
