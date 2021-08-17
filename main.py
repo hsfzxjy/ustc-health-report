@@ -81,6 +81,6 @@ if __name__ == "__main__":
     r = report_health(r)
     # print(r.status_code)
     if r.status_code != 200 or "上报成功" not in r.text:
-        print(r.text)
+        # print(r.text)
         print('error')
         sys.exit(1)
