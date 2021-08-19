@@ -14,7 +14,7 @@ def _get_value(form, name: str, pattern: str):
     }[pattern]
     elements = form.cssselect(pattern.format(name))
     if not elements:
-        raise RuntimeError
+        raise RuntimeError(f"{name} {pattern}")
         return None
     return elements[0].value
 
@@ -45,6 +45,9 @@ def _extract_form_values(root):
         ("is_danger", "input", "0"),
         ("is_goto_danger", "input", "0"),
         ("other_detail", "textarea", ""),
+        ("jinji_lxr", "input", "王刚"),
+        ("jinji_guanxi", "input", "父子"),
+        ("jiji_mobile", "input", "13923456789"),
     ]:
         payload[name] = _get_value(form, name, pattern) or default
     return payload
@@ -81,6 +84,6 @@ if __name__ == "__main__":
     r = report_health(r)
     # print(r.status_code)
     if r.status_code != 200 or "上报成功" not in r.text:
-        # print(r.text)
+        print(r.text)
         print('error')
         sys.exit(1)
