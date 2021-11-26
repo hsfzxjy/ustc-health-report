@@ -1,6 +1,7 @@
 import os
 import sys
 import requests
+import datetime
 from lxml.html import document_fromstring
 
 
@@ -33,7 +34,7 @@ def _extract_form_values(root):
         ("gps_country", "input", ""),
         ("now_country", "hidden", ""),
         ("now_detail", "textarea", ""),
-        ("is_inschool", "input", "7"),
+        ("is_inschool", "input", "4"),
         ("body_condition", "select", "1"),
         ("body_condition_detail", "textarea", ""),
         ("now_status", "select", "1"),
@@ -52,6 +53,20 @@ def _extract_form_values(root):
         payload[name] = _get_value(form, name, pattern) or default
     return payload
 
+
+def _another_extract_form_values(root):
+    form: Element = root.cssselect("#daliy-report form")[0]
+    payload = {}
+    for name, pattern, default in [
+        ("_token", "input", ""),
+        ("name", "input", ""),
+        ("zjhm", "input", ""),
+        ("dep_mame", "input", ""),
+        ("start_date", "input", ""),
+        ("end_date", "input", ""),
+    ]:
+        payload[name] = _get_value(form, name, pattern) or default
+    return payload
 
 def get_validatecode(session: requests.Session) -> str:
     import re
@@ -120,19 +135,41 @@ def login(session: requests.Session, username: str, password: str):
 def report_health(response: requests.Response):
     root = document_fromstring(response.text)
     payload = _extract_form_values(root)
-    return session.post("https://weixine.ustc.edu.cn/2020/daliy_report", data=payload)
+    response = session.post("https://weixine.ustc.edu.cn/2020/daliy_report", data=payload)
+    print(r.status_code)
+    if response.status_code != 200 or "上报成功" not in response.text:
+        print("error")
+        sys.exit(1)
+    else:
+        print("Daily report OK")
+    response = session.get(
+        "https://weixine.ustc.edu.cn/2020/apply/daliy",
+        headers={"Referer": "https://weixine.ustc.edu.cn/2020/daliy_report"}
+    )
+    return response
 
-
+def report_out(response: requests.Response):
+    today = datetime.datetime.now().weekday() + 1
+    if(today == 5):
+        print("Time for out!")
+        root = document_fromstring(response.text)
+        payload = _another_extract_form_values(root)
+        #print(payload)
+        response = session.post("https://weixine.ustc.edu.cn/2020/apply/daliy/post", data=payload)
+        print(response.status_code)
+        if response.status_code != 200:
+            print("error")
+            sys.exit(1)
+        else:
+            print("Out report OK")
+        return response
+    else:
+        print("Not today... But OK!")
+        return response
 if __name__ == "__main__":
     IDENT = os.getenv("IDENT")
     session = requests.Session()
     r = login(session, *IDENT.split(":"))
     print("logined")
     r = report_health(r)
-    print(r.status_code)
-    if r.status_code != 200 or "上报成功" not in r.text:
-        # print(r.text)
-        print("error")
-        sys.exit(1)
-    else:
-        print("OK")
+    r = report_out(r)
