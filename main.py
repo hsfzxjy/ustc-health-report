@@ -172,4 +172,5 @@ if __name__ == "__main__":
     r = login(session, *IDENT.split(":"))
     print("logined")
     r = report_health(r)
-    r = report_out(r)
+    if os.getenv('REPORT_OUT'):
+        r = report_out(r)
