@@ -28,3 +28,4 @@ jobs:
           python3 main.py
         env:
           IDENT: ${{ secrets.IDENT }}
+          REPORT_OUT: ${{ secrets.REPORT_OUT }}
