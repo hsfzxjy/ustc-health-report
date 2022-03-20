@@ -24,16 +24,7 @@ def _extract_form_values(root):
     payload = {}
     for name, pattern, default in [
         ("_token", "input", ""),
-        ("now_address", "checked-input", "1"),
-        ("gps_now_address", "input", ""),
-        ("gps_province", "input", ""),
-        ("now_province", "hidden", "340000"),
-        ("gps_city", "input", ""),
-        ("now_city", "hidden", "340100"),
-        ("gps_country", "input", ""),
-        ("now_country", "hidden", ""),
-        ("now_detail", "textarea", ""),
-        ("is_inschool", "input", "7"),
+        ("juzhudi", "checked-input", "高新校区"),
         ("body_condition", "select", "1"),
         ("body_condition_detail", "textarea", ""),
         ("now_status", "select", "1"),
