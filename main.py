@@ -45,21 +45,6 @@ def _extract_form_values(root):
     return payload
 
 
-def _another_extract_form_values(root):
-    form: Element = root.cssselect("#daliy-report form")[0]
-    payload = {}
-    for name, pattern, default in [
-        ("_token", "input", ""),
-        ("name", "input", ""),
-        ("zjhm", "input", ""),
-        ("dep_mame", "input", ""),
-        ("start_date", "input", ""),
-        ("end_date", "input", ""),
-    ]:
-        payload[name] = _get_value(form, name, pattern) or default
-    return payload
-
-
 def get_validatecode(session: requests.Session) -> str:
     import re
     import pytesseract
@@ -137,32 +122,39 @@ def report_health(response: requests.Response):
     else:
         print("Daily report OK")
     response = session.get(
-        "https://weixine.ustc.edu.cn/2020/apply/daliy",
-        headers={"Referer": "https://weixine.ustc.edu.cn/2020/daliy_report"},
+        "https://weixine.ustc.edu.cn/2020/apply/daliy/i?t=14",
     )
     return response
 
 
+def _extract_form_values_for_out(root):
+    form: Element = root.cssselect("#daliy-report form")[0]
+    payload = {}
+    for name, pattern, default in [
+        ("_token", "input", ""),
+        ("start_date", "input", ""),
+        ("end_date", "input", ""),
+    ]:
+        payload[name] = _get_value(form, name, pattern) or default
+    return payload
+
+
 def report_out(response: requests.Response):
-    today = datetime.datetime.now().weekday() + 1
-    if today == 5:
-        print("Time for out!")
-        root = document_fromstring(response.text)
-        payload = _another_extract_form_values(root)
-        # print(payload)
-        response = session.post(
-            "https://weixine.ustc.edu.cn/2020/apply/daliy/post", data=payload
-        )
-        print(response.status_code)
-        if response.status_code != 200:
-            print("error")
-            sys.exit(1)
-        else:
-            print("Out report OK")
-        return response
+    print("Time for out!")
+    root = document_fromstring(response.text)
+    payload = _extract_form_values_for_out(root)
+    payload["return_college[]"] = ["东校区", "西校区", "高新校区", "先研院"]
+    payload["t"] = "14"
+    response = session.post(
+        "https://weixine.ustc.edu.cn/2020/apply/daliy/post", data=payload
+    )
+    print(response.status_code)
+    if response.status_code != 200:
+        print("error")
+        sys.exit(1)
     else:
-        print("Not today... But OK!")
-        return response
+        print("Out report OK")
+    return response
 
 
 if __name__ == "__main__":
