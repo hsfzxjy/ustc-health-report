@@ -8,7 +8,7 @@ from lxml.html import document_fromstring
 def _get_value(form, name: str, pattern: str):
     pattern = {
         "input": "input[name={}]",
-        "checked-input": "input[name={}][checked]",
+        "checked-input": "input[name={}]",
         "textarea": "textarea[name={}]",
         "select": "select[name={}]",
         "hidden": "input#{}_hidden",
