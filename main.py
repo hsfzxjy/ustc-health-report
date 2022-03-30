@@ -145,7 +145,7 @@ def report_out(response: requests.Response):
     print("Time for out!")
     root = document_fromstring(response.text)
     payload = _extract_form_values_for_out(root)
-    payload["return_college[]"] = ["东校区", "西校区", "高新校区", "先研院"]
+    payload["return_college[]"] = ["东校区", "西校区", "中校区", "高新校区", "先研院"]
     payload["t"] = "14"
     response = session.post(
         "https://weixine.ustc.edu.cn/2020/apply/daliy/post", data=payload
