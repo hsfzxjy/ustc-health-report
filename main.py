@@ -26,6 +26,8 @@ def _extract_form_values(root):
     for name, pattern, default in [
         ("_token", "input", ""),
         ("juzhudi", "checked-input", "高新校区"),
+        ("dorm_building", "input", ""),
+        ("dorm", "input", ""),
         ("body_condition", "select", "1"),
         ("body_condition_detail", "textarea", ""),
         ("now_status", "select", "1"),
