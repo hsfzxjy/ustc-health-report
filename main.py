@@ -30,8 +30,6 @@ def _extract_form_values(root):
         ("dorm", "input", ""),
         ("body_condition", "select", "1"),
         ("body_condition_detail", "textarea", ""),
-        ("now_status", "select", "1"),
-        ("now_status_detail", "textarea", ""),
         ("has_fever", "checked-input", "0"),
         ("last_touch_sars", "checked-input", "0"),
         ("last_touch_sars_date", "input", ""),
@@ -124,7 +122,7 @@ def report_health(response: requests.Response):
     else:
         print("Daily report OK")
     response = session.get(
-        "https://weixine.ustc.edu.cn/2020/apply/daliy/i?t=14",
+        "https://weixine.ustc.edu.cn/2020/apply/daliy/i?t=4",
     )
     return response
 
@@ -146,10 +144,12 @@ def report_out(response: requests.Response):
     root = document_fromstring(response.text)
     payload = _extract_form_values_for_out(root)
     payload["return_college[]"] = ["东校区", "西校区", "中校区", "高新校区", "先研院"]
-    payload["t"] = "14"
+    payload["reason"] = "实验"
+    payload["t"] = "4"
     response = session.post(
         "https://weixine.ustc.edu.cn/2020/apply/daliy/post", data=payload
     )
+    print(response.content.decode("utf-8"))
     print(response.status_code)
     if response.status_code != 200:
         print("error")
