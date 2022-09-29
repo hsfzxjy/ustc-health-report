@@ -3,7 +3,7 @@ name: USTC-Health-Report
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 4,16 * * *"
+    - cron: "10 11,23 * * *"
   watch:
     types: [started]
   push:
@@ -12,7 +12,7 @@ jobs:
   health-report:
     name: Report Health Condition
     runs-on: ubuntu-latest
-    if: github.event.repository.owner.id == github.event.sender.id
+    if: github.event.repository.owner.id == github.event.sender.id || github.event_name == 'schedule'
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-python@v2
